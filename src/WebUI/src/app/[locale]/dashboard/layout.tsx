@@ -6,6 +6,7 @@ import { LayoutDashboard, ShoppingBag, Download, Settings, LogOut } from "lucide
 import { useAuthStore } from "@/stores/authStore";
 import { authApi } from "@/lib/api";
 import React from "react";
+import DashboardLoading from "./loading";
 
 export default function DashboardLayout({
   children,
@@ -55,8 +56,17 @@ export default function DashboardLayout({
 
   if (isRestoring) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex flex-col md:flex-row gap-8">
+          {/* Mock Sidebar to prevent jump */}
+          <aside className="w-full md:w-64 shrink-0 hidden md:block opacity-50">
+            <div className="bg-white border border-slate-200 rounded-3xl p-4 shadow-sm min-h-[400px]"></div>
+          </aside>
+          
+          <main className="flex-1 min-w-0">
+            <DashboardLoading />
+          </main>
+        </div>
       </div>
     );
   }

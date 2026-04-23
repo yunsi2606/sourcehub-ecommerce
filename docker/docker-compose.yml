@@ -1,0 +1,62 @@
+version: '3.8'
+name: sourcehub-ecommerce
+
+services:
+  webapi:
+    image: sourcehub-ecommerce-webapi:latest
+    container_name: sourcehub-ecommerce-api
+    build:
+      context: ../
+      dockerfile: src/WebAPI/Dockerfile
+    ports:
+      - "8172:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+
+      # Database Connection
+      - ConnectionStrings__DefaultConnection=${DB_CONNECTION_STRING}
+
+      # JWT Settings
+      - Jwt__Secret=${JWT_SECRET}
+      - Jwt__Issuer=${JWT_ISSUER}
+      - Jwt__Audience=${JWT_AUDIENCE}
+      - Jwt__AccessTokenMinutes=${JWT_ACCESS_TOKEN_MINUTES}
+      - Jwt__RefreshTokenDays=${JWT_REFRESH_TOKEN_DAYS}
+
+      # CORS
+      - AllowedOrigins__NextJs=${ALLOWED_ORIGINS_NEXTJS}
+
+      # Stripe Settings
+      - Stripe__SecretKey=${STRIPE_SECRET_KEY}
+      - Stripe__WebhookSecret=${STRIPE_WEBHOOK_SECRET}
+      - Stripe__SuccessUrl=${STRIPE_SUCCESS_URL}
+      - Stripe__CancelUrl=${STRIPE_CANCEL_URL}
+
+      # Cloudflare R2 Storage Settings
+      - CloudflareR2__AccountId=${CLOUDFLARE_R2_ACCOUNT_ID}
+      - CloudflareR2__AccessKeyId=${CLOUDFLARE_R2_ACCESS_KEY_ID}
+      - CloudflareR2__SecretAccessKey=${CLOUDFLARE_R2_SECRET_ACCESS_KEY}
+      - CloudflareR2__PublicBucketName=${CLOUDFLARE_R2_PUBLIC_BUCKET_NAME}
+      - CloudflareR2__PrivateBucketName=${CLOUDFLARE_R2_PRIVATE_BUCKET_NAME}
+      - CloudflareR2__PublicCdnUrl=${CLOUDFLARE_R2_PUBLIC_CDN_URL}
+      - CloudflareR2__PresignedUrlExpirySeconds=${CLOUDFLARE_R2_PRESIGNED_URL_EXPIRY_SECONDS}
+
+    restart: unless-stopped
+
+  tunnel:
+    image: cloudflare/cloudflared:latest
+    container_name: sourcehub-ecommerce-tunnel
+    command: tunnel --no-autoupdate run --token ${TUNNEL_TOKEN}
+    restart: unless-stopped
+    depends_on:
+      - webapi
+    environment:
+      - TUNNEL_METRICS=0.0.0.0:3000
+    healthcheck:
+      test: [ "CMD", "wget", "--spider", "http://localhost:3000/ready" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    volumes:
+      - ./cloudflared:/etc/cloudflared

@@ -4,6 +4,8 @@ using SourceEcommerce.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// builder.Configuration.AddJsonFile("appsettings.Development.json", optional: true, reloadOnChange: true);
+
 // Infrastructure (EF Core + PostgreSQL + Repository + R2)
 builder.Services.AddInfrastructure(builder.Configuration);
 

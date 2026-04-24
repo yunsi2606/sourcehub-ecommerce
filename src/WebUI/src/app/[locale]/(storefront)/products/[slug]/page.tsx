@@ -1,26 +1,62 @@
-import { notFound } from "next/navigation";
-import { getTranslations } from "next-intl/server";
+"use client";
+
+import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/routing";
-import { productApi } from "@/lib/api";
+import { productApi } from "@/lib/api/products";
 import { ChevronRight, FileCode2, ShieldCheck, ShoppingCart, Zap } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useParams, notFound } from "next/navigation";
+import { Skeleton } from "@/components/ui/skeletons";
 
-export default async function ProductDetailPage({
-  params
-}: {
-  params: Promise<{ slug: string, locale: string }>;
-}) {
-  const { slug } = await params;
-  const t = await getTranslations("ProductDetail");
+export default function ProductDetailPage() {
+  const params = useParams();
+  const slug = params.slug as string;
+  const t = useTranslations("ProductDetail");
 
-  let product: any = null;
+  const [product, setProduct] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(false);
 
-  try {
-    product = await productApi.getBySlug(slug);
-  } catch (error) {
-    console.error("Failed to fetch product detail:", error);
+  useEffect(() => {
+    setIsLoading(true);
+    productApi.getBySlug(slug)
+      .then((data) => {
+        setProduct(data);
+      })
+      .catch((e) => {
+        console.error("Failed to fetch product detail:", e);
+        setError(true);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  }, [slug]);
+
+  if (error) {
+    notFound();
   }
 
-  if (!product) notFound();
+  if (isLoading) {
+    return (
+      <div className="container mx-auto px-4 py-8 animate-pulse">
+        <Skeleton className="h-4 w-64 mb-8" />
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+          <div className="lg:col-span-2 space-y-12">
+            <Skeleton className="aspect-[16/9] w-full rounded-2xl" />
+            <Skeleton className="h-6 w-32 mb-4" />
+            <div className="flex gap-2"><Skeleton className="h-8 w-20 rounded-lg" /><Skeleton className="h-8 w-20 rounded-lg" /></div>
+            <Skeleton className="h-4 w-full mt-4" />
+            <Skeleton className="h-4 w-5/6" />
+          </div>
+          <div>
+            <Skeleton className="h-[400px] w-full rounded-3xl" />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!product) return null;
 
   return (
     <div className="container mx-auto px-4 py-8">

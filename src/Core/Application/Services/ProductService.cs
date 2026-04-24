@@ -22,14 +22,20 @@ public class ProductService(IApplicationDbContext db, IStorageService storage)
             query = query.Where(p => EF.Functions.ILike(p.Title, $"%{q.Search}%") ||
                                      EF.Functions.ILike(p.ShortDescription, $"%{q.Search}%"));
 
-        if (q.CategoryId.HasValue) query = query.Where(p => p.CategoryId == q.CategoryId);
+        if (q.CategoryId.HasValue)
+            query = query.Where(p => p.CategoryId == q.CategoryId);
+        else if (!string.IsNullOrWhiteSpace(q.CategorySlug))
+            query = query.Where(p => p.Category != null && p.Category.Slug == q.CategorySlug);
+
+        if (q.TagIds is { Count: > 0 })
+            query = query.Where(p => p.ProductTags.Any(pt => q.TagIds.Contains(pt.TagId)));
+        else if (!string.IsNullOrWhiteSpace(q.TagSlug))
+            query = query.Where(p => p.ProductTags.Any(pt => pt.Tag.Slug == q.TagSlug));
+
         if (q.ProductType.HasValue) query = query.Where(p => p.ProductType == q.ProductType);
         if (q.IsFeatured.HasValue) query = query.Where(p => p.IsFeatured == q.IsFeatured);
         if (q.MinPrice.HasValue) query = query.Where(p => (p.SalePrice ?? p.Price) >= q.MinPrice);
         if (q.MaxPrice.HasValue) query = query.Where(p => (p.SalePrice ?? p.Price) <= q.MaxPrice);
-
-        if (q.TagIds is { Count: > 0 })
-            query = query.Where(p => p.ProductTags.Any(pt => q.TagIds.Contains(pt.TagId)));
 
         query = q.SortBy.ToLower() switch
         {

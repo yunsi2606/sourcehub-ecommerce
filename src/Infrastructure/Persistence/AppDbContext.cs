@@ -40,6 +40,8 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.HasDefaultSchema("sourcehub");
+        
         base.OnModelCreating(modelBuilder);
 
         // Apply all IEntityTypeConfiguration from this assembly

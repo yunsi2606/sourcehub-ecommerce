@@ -113,7 +113,9 @@ public record ProductListResponse(
 public record ProductQueryParams(
     string? Search,
     Guid? CategoryId,
+    string? CategorySlug,        // alternative to CategoryId for public API
     List<Guid>? TagIds,
+    string? TagSlug,             // alternative to TagIds for public API (single tag)
     ProductType? ProductType,
     decimal? MinPrice,
     decimal? MaxPrice,

@@ -21,7 +21,7 @@ public static class DependencyInjection
         services.AddDbContext<AppDbContext>(options =>
             options.UseNpgsql(connectionString, npgsql =>
             {
-                npgsql.MigrationsHistoryTable("__EFMigrationsHistory", "public");
+                npgsql.MigrationsHistoryTable("__EFMigrationsHistory", "sourcehub");
                 npgsql.EnableRetryOnFailure(3);
             }));
 

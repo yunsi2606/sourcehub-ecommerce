@@ -101,10 +101,17 @@ async function ProductsData({
 }) {
   const t = await getTranslations("Products");
   let products: any[] = [];
+  let totalCount = 0;
 
   try {
-    const res = await productApi.getList({ categorySlug: currentCategory, tagSlug: currentTag, searchTerm: currentSearch });
+    const res = await productApi.getList({
+      categorySlug: currentCategory,
+      tagSlug: currentTag,
+      search: currentSearch,
+      isActive: true,
+    });
     products = res.items || [];
+    totalCount = res.totalCount ?? 0;
   } catch (e) {
     console.error("Failed to fetch products:", e);
   }

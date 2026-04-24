@@ -17,6 +17,12 @@ public interface IApplicationDbContext
     DbSet<ProductFile> ProductFiles { get; }
     DbSet<ProductAddon> ProductAddons { get; }
 
+    // Blog
+    DbSet<Post> Posts { get; }
+    DbSet<PostTag> PostTags { get; }
+    DbSet<PostMedia> PostMedia { get; }
+    DbSet<BlogCategory> BlogCategories { get; }
+
     // Sales
     DbSet<Order> Orders { get; }
     DbSet<OrderItem> OrderItems { get; }

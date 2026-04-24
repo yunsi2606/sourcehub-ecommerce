@@ -31,5 +31,28 @@ export const fileApi = {
     }
 
     return res.json();
+  },
+
+  uploadMediaTemp: async (file: File, token: string): Promise<UploadResponse & { mimeType: string }> => {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:5000/api/v1';
+
+    const res = await fetch(`${API_BASE}/files/upload-media`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      },
+      body: formData,
+      credentials: 'omit'
+    });
+
+    if (!res.ok) {
+      const errorText = await res.text();
+      throw new Error(errorText || 'Media upload failed');
+    }
+
+    return res.json();
   }
 };

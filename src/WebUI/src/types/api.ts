@@ -198,3 +198,72 @@ export interface AuthResponse {
   accessToken: string;
   user: AuthUser;
 }
+
+// Blog
+
+export interface BlogCategoryDto {
+  id: string;
+  name: string;
+  slug: string;
+  description: string | null;
+  postCount: number;
+}
+
+export interface PostMediaDto {
+  id: string;
+  mediaType: 'Image' | 'Video' | 'File';
+  url: string;
+  fileName: string;
+  fileSize: number;
+  mimeType: string;
+  sortOrder: number;
+}
+
+export interface PostSummaryDto {
+  id: string;
+  title: string;
+  slug: string;
+  excerpt: string;
+  coverImageUrl: string | null;
+  status: 'Draft' | 'Published' | 'Archived';
+  authorName: string;
+  authorAvatarUrl: string | null;
+  categoryName: string | null;
+  categorySlug: string | null;
+  tags: string[];
+  viewCount: number;
+  readTimeMinutes: number;
+  isFeatured: boolean;
+  publishedAt: string | null;
+  createdAt: string;
+}
+
+export interface PostDetailDto extends PostSummaryDto {
+  contentJson: string;
+  blogCategoryId: string | null;
+  media: PostMediaDto[];
+  updatedAt: string;
+}
+
+export interface PostListResponse {
+  items: PostSummaryDto[];
+  totalCount: number;
+  page: number;
+  pageSize: number;
+}
+
+export interface CreatePostRequest {
+  title: string;
+  excerpt: string;
+  contentJson: string;
+  coverImageUrl?: string | null;
+  blogCategoryId?: string | null;
+  tagIds: string[];
+  status: 'Draft' | 'Published' | 'Archived';
+  isFeatured: boolean;
+}
+
+export interface BlogCategoryRequest {
+  name: string;
+  description?: string | null;
+}

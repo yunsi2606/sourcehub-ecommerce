@@ -20,6 +20,12 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<ProductFile> ProductFiles => Set<ProductFile>();
     public DbSet<ProductAddon> ProductAddons => Set<ProductAddon>();
 
+    // Blog
+    public DbSet<Post> Posts => Set<Post>();
+    public DbSet<PostTag> PostTags => Set<PostTag>();
+    public DbSet<PostMedia> PostMedia => Set<PostMedia>();
+    public DbSet<BlogCategory> BlogCategories => Set<BlogCategory>();
+
     // Sales
     public DbSet<Order> Orders => Set<Order>();
     public DbSet<OrderItem> OrderItems => Set<OrderItem>();
@@ -59,6 +65,8 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
         modelBuilder.HasPostgresEnum<SubscriptionStatus>();
         modelBuilder.HasPostgresEnum<NotificationType>();
         modelBuilder.HasPostgresEnum<UserRole>();
+        modelBuilder.HasPostgresEnum<PostStatus>();
+        modelBuilder.HasPostgresEnum<PostMediaType>();
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

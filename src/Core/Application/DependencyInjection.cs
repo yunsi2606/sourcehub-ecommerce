@@ -18,6 +18,7 @@ public static class DependencyInjection
         services.AddScoped<OrderService>();
         services.AddScoped<DownloadService>();
         services.AddScoped<PlanService>();
+        services.AddScoped<BlogService>();
 
         return services;
     }

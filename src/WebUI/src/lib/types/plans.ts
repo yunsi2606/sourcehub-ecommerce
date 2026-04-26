@@ -32,3 +32,16 @@ export interface CheckoutResponse {
 export interface BillingPortalResponse {
   portalUrl: string;
 }
+
+export interface UpsertPlanRequest {
+  name: string;
+  slug: string;
+  description: string;
+  tier: number;
+  monthlyPrice: number;
+  yearlyPrice: number;
+  isActive: boolean;
+  featuresJson: string;
+  stripePriceIdMonthly: string | null;
+  stripePriceIdYearly: string | null;
+}

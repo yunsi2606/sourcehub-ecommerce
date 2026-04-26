@@ -58,4 +58,34 @@ public class PlansController(PlanService planService) : BaseApiController
             return BadRequest(e.Message);
         }
     }
+
+    // Admin Endpoints
+
+    [HttpGet("all")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> GetAll(CancellationToken ct)
+    {
+        return Ok(await planService.GetAllPlansAsync(ct));
+    }
+
+    [HttpGet("{id:guid}")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> GetById(Guid id, CancellationToken ct)
+    {
+        return Ok(await planService.GetPlanByIdAsync(id, ct));
+    }
+
+    [HttpPost()]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> Create([FromBody] UpsertPlanRequest req, CancellationToken ct)
+    {
+        return Ok(await planService.UpsertPlanAsync(null, req, ct));
+    }
+
+    [HttpPut("{id:guid}")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> Update(Guid id, [FromBody] UpsertPlanRequest req, CancellationToken ct)
+    {
+        return Ok(await planService.UpsertPlanAsync(id, req, ct));
+    }
 }

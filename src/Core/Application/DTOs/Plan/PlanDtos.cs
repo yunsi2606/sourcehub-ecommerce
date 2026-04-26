@@ -36,9 +36,12 @@ public record CreatePlanCheckoutRequest(
 // Admin Upsert
 public record UpsertPlanRequest(
     string Name,
+    string Slug,
     string Description,
+    PlanTier Tier,
     decimal MonthlyPrice,
     decimal YearlyPrice,
+    bool IsActive,
     string FeaturesJson,
     string? StripePriceIdMonthly,
     string? StripePriceIdYearly

@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { Link, usePathname, useRouter } from "@/i18n/routing";
-import { LayoutDashboard, ShoppingBag, Download, Settings, LogOut } from "lucide-react";
+import { LayoutDashboard, ShoppingBag, Download, Settings, LogOut, CreditCard, Receipt } from "lucide-react";
 import { useAuthStore } from "@/stores/authStore";
 import { authApi } from "@/lib/api";
 import React from "react";
@@ -113,6 +113,14 @@ export default function DashboardLayout({
               <Link href="/dashboard/blog" className={getLinkClass("/dashboard/blog")}>
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
                 Blog
+              </Link>
+              <Link href="/dashboard/plans" className={getLinkClass("/dashboard/plans")}>
+                <CreditCard className="w-5 h-5" />
+                {t("plans")}
+              </Link>
+              <Link href="/dashboard/subscriptions" className={getLinkClass("/dashboard/subscriptions")}>
+                <Receipt className="w-5 h-5" />
+                Transactions
               </Link>
               <Link href="/dashboard/settings" className={getLinkClass("/dashboard/settings")}>
                 <Settings className="w-5 h-5" />

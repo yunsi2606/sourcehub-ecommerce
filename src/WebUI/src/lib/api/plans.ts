@@ -1,5 +1,5 @@
 import { apiFetch } from './client';
-import { Plan, UserPlan, CreatePlanCheckoutRequest, CheckoutResponse, BillingPortalResponse } from '../types/plans';
+import { Plan, UserPlan, CreatePlanCheckoutRequest, CheckoutResponse, BillingPortalResponse, UpsertPlanRequest } from '../types/plans';
 
 export const plansApi = {
   getActivePlans: () => {
@@ -20,5 +20,31 @@ export const plansApi = {
   
   getBillingPortal: (token: string) => {
     return apiFetch<BillingPortalResponse>('/plans/billing-portal', { token });
+  }
+};
+
+export const adminPlansApi = {
+  getAll: (token: string) => {
+    return apiFetch<Plan[]>('/plans/admin', { token });
+  },
+  
+  getById: (token: string, id: string) => {
+    return apiFetch<Plan>(`/plans/admin/${id}`, { token });
+  },
+  
+  create: (token: string, data: UpsertPlanRequest) => {
+    return apiFetch<Plan>('/plans/admin', {
+      method: 'POST',
+      body: JSON.stringify(data),
+      token
+    });
+  },
+  
+  update: (token: string, id: string, data: UpsertPlanRequest) => {
+    return apiFetch<Plan>(`/plans/admin/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+      token
+    });
   }
 };

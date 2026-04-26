@@ -4,6 +4,7 @@ using SourceEcommerce.Application.Interfaces;
 using SourceEcommerce.Domain.Enums;
 using SourceEcommerce.Domain.Interfaces;
 using System.Text.Json;
+using SourceEcommerce.Domain.Entities;
 using PlanTier = SourceEcommerce.Domain.Enums.PlanTier;
 using Subscription = SourceEcommerce.Domain.Entities.Subscription;
 
@@ -26,6 +27,63 @@ public class PlanService(
             p.MonthlyPrice, p.YearlyPrice, p.IsActive,
             JsonSerializer.Deserialize<List<string>>(p.FeaturesJson) ?? []
         )).ToList();
+    }
+
+    public async Task<List<PlanDto>> GetAllPlansAsync(CancellationToken ct = default)
+    {
+        var plans = await db.Plans
+            .OrderBy(p => p.Tier)
+            .AsNoTracking()
+            .ToListAsync(ct);
+
+        return plans.Select(p => new PlanDto(
+            p.Id, p.Name, p.Slug, p.Description, p.Tier,
+            p.MonthlyPrice, p.YearlyPrice, p.IsActive,
+            JsonSerializer.Deserialize<List<string>>(p.FeaturesJson) ?? []
+        )).ToList();
+    }
+
+    public async Task<PlanDto> GetPlanByIdAsync(Guid id, CancellationToken ct = default)
+    {
+        var p = await db.Plans.FindAsync([id], ct) ?? throw new Exception("Plan not found");
+        return new PlanDto(
+            p.Id, p.Name, p.Slug, p.Description, p.Tier,
+            p.MonthlyPrice, p.YearlyPrice, p.IsActive,
+            JsonSerializer.Deserialize<List<string>>(p.FeaturesJson) ?? []
+        );
+    }
+
+    public async Task<PlanDto> UpsertPlanAsync(Guid? id, UpsertPlanRequest req, CancellationToken ct = default)
+    {
+        Plan plan;
+        if (id.HasValue && id.Value != Guid.Empty)
+        {
+            plan = await db.Plans.FindAsync([id.Value], ct) ?? throw new Exception("Plan not found");
+        }
+        else
+        {
+            plan = new Plan();
+            db.Plans.Add(plan);
+        }
+
+        plan.Name = req.Name;
+        plan.Slug = req.Slug;
+        plan.Description = req.Description;
+        plan.Tier = req.Tier;
+        plan.MonthlyPrice = req.MonthlyPrice;
+        plan.YearlyPrice = req.YearlyPrice;
+        plan.IsActive = req.IsActive;
+        plan.FeaturesJson = string.IsNullOrWhiteSpace(req.FeaturesJson) ? "[]" : req.FeaturesJson;
+        plan.StripePriceIdMonthly = req.StripePriceIdMonthly;
+        plan.StripePriceIdYearly = req.StripePriceIdYearly;
+
+        await db.SaveChangesAsync(ct);
+
+        return new PlanDto(
+            plan.Id, plan.Name, plan.Slug, plan.Description, plan.Tier,
+            plan.MonthlyPrice, plan.YearlyPrice, plan.IsActive,
+            JsonSerializer.Deserialize<List<string>>(plan.FeaturesJson) ?? []
+        );
     }
 
     public async Task<UserPlanDto> GetUserCurrentPlanAsync(Guid userId, CancellationToken ct = default)

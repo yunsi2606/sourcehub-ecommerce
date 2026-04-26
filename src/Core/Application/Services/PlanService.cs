@@ -199,6 +199,6 @@ public class PlanService(
                     dbSub.AutoRenew = false;
                     await db.SaveChangesAsync(ct);
                 }
-            }, ct);
+            }, null, ct);
     }
 }

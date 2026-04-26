@@ -299,12 +299,18 @@
   },
   "Checkout": {
     "success": "Payment Successful!",
-    "successDesc": "Thank you for your purchase. Your subscription has been activated.",
-    "viewProfile": "Go to My Profile",
-    "cancel": "Payment Canceled",
-    "cancelDesc": "Your checkout process was canceled. No charges were made.",
-    "backToPricing": "Return to Pricing",
-    "backToHome": "Return To Home"
+    "successDesc": "Thank you for subscribing. Your plan has been activated successfully.",
+    "viewProfile": "Go to Profile",
+    "cancel": "Payment Cancelled",
+    "cancelDesc": "Your payment process has been cancelled. You have not been charged.",
+    "backToPricing": "Back to Pricing",
+    "backToHome": "Back to Home",
+    "orderSuccessTitle": "Order Placed Successfully!",
+    "orderSuccessDesc": "Thank you for your purchase. Your order has been confirmed and is being processed.",
+    "orderId": "Order ID",
+    "totalAmount": "Total",
+    "viewOrder": "View My Order",
+    "backToCart": "Back to Cart"
   },
   "DashboardPlans": {
     "title": "Plans",

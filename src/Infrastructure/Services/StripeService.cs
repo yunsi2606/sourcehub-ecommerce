@@ -80,6 +80,45 @@ public class StripeService : IStripeService
         return session.Url;
     }
 
+    public async Task<string> CreateOrderCheckoutSessionAsync(
+        string customerId,
+        string orderId,
+        string paymentId,
+        List<(string name, long amountVnd, long quantity)> lineItems,
+        CancellationToken ct = default)
+    {
+        var options = new SessionCreateOptions
+        {
+            Customer = customerId,
+            Mode = "payment",
+            PaymentMethodTypes = ["card"],
+            LineItems = lineItems.Select(li => new SessionLineItemOptions
+            {
+                PriceData = new SessionLineItemPriceDataOptions
+                {
+                    Currency = "vnd",
+                    UnitAmount = li.amountVnd, // VND: no smallest unit conversion needed (1 VND = 1)
+                    ProductData = new SessionLineItemPriceDataProductDataOptions
+                    {
+                        Name = li.name
+                    }
+                },
+                Quantity = li.quantity
+            }).ToList(),
+            SuccessUrl = _options.SuccessUrl.Replace("{ORDER_ID}", orderId),
+            CancelUrl = _options.CancelUrl,
+            Metadata = new Dictionary<string, string>
+            {
+                { "OrderId", orderId },
+                { "PaymentId", paymentId }
+            }
+        };
+
+        var service = new SessionService();
+        var session = await service.CreateAsync(options, cancellationToken: ct);
+        return session.Url;
+    }
+
     public async Task<string> CreateBillingPortalSessionAsync(string customerId, CancellationToken ct = default)
     {
         var options = new Stripe.BillingPortal.SessionCreateOptions
@@ -100,29 +139,38 @@ public class StripeService : IStripeService
         Func<string, string, string, Task> onCheckoutCompleted,
         Func<string, DateTime, DateTime, Task> onInvoicePaid,
         Func<string, Task> onSubscriptionDeleted,
+        Func<string, string, Task>? onOrderPaymentCompleted,
         CancellationToken ct = default)
     {
         var stripeEvent = EventUtility.ConstructEvent(payload, signature, _options.WebhookSecret);
 
         switch (stripeEvent.Type)
         {
-            // v51: EventTypes.CheckoutSessionCompleted replaces Events.CheckoutSessionCompleted
             case EventTypes.CheckoutSessionCompleted:
                 if (stripeEvent.Data.Object is Session session)
                 {
-                    // v51: metadata is stored on the subscription, retrieve it from the subscription object
-                    var subId = session.SubscriptionId;
-                    var customerId = session.CustomerId;
-
-                    // Retrieve subscription to get metadata we stored
-                    if (!string.IsNullOrEmpty(subId))
+                    // Order one-time payment (mode=payment)
+                    if (session.Mode == "payment" && session.Metadata.TryGetValue("OrderId", out var orderId)
+                        && session.Metadata.TryGetValue("PaymentId", out var paymentId)
+                        && onOrderPaymentCompleted != null)
                     {
-                        var subService = new SubscriptionService();
-                        var stripeSub = await subService.GetAsync(subId, cancellationToken: ct);
+                        await onOrderPaymentCompleted(orderId, paymentId);
+                    }
+                    // Plan subscription (mode=subscription)
+                    else if (session.Mode == "subscription")
+                    {
+                        var subId = session.SubscriptionId;
+                        var customerId = session.CustomerId;
 
-                        if (stripeSub.Metadata.TryGetValue("PlanSubscriptionId", out var planSubIdStr))
+                        if (!string.IsNullOrEmpty(subId))
                         {
-                            await onCheckoutCompleted(planSubIdStr, subId, customerId ?? "");
+                            var subService = new SubscriptionService();
+                            var stripeSub = await subService.GetAsync(subId, cancellationToken: ct);
+
+                            if (stripeSub.Metadata.TryGetValue("PlanSubscriptionId", out var planSubIdStr))
+                            {
+                                await onCheckoutCompleted(planSubIdStr, subId, customerId ?? "");
+                            }
                         }
                     }
                 }

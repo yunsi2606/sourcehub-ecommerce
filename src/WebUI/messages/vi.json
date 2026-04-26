@@ -304,7 +304,13 @@
     "cancel": "Thanh toán bị hủy",
     "cancelDesc": "Quá trình thanh toán của bạn đã bị hủy. Bạn chưa bị trừ tiền.",
     "backToPricing": "Quay lại bảng giá",
-    "backToHome": "Quay lại trang chủ"
+    "backToHome": "Quay lại trang chủ",
+    "orderSuccessTitle": "Đặt hàng thành công!",
+    "orderSuccessDesc": "Cảm ơn bạn đã tin tưởng. Đơn hàng của bạn đã được xác nhận và đang được xử lý.",
+    "orderId": "Mã đơn hàng",
+    "totalAmount": "Tổng cộng",
+    "viewOrder": "Xem đơn hàng của tôi",
+    "backToCart": "Quay lại giỏ hàng"
   },
   "DashboardPlans": {
     "title": "Quản lý Gói (Plans)",

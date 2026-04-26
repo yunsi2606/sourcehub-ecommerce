@@ -36,3 +36,12 @@ export const adminOrderApi = {
   fulfill: (id: string, token: string) =>
     apiFetch<void>(`/orders/${id}/fulfill`, { method: 'POST', token }),
 };
+
+export const paymentsApi = {
+  initiateStripe: (orderId: string, token: string) =>
+    apiFetch<{ redirectUrl: string }>('/payments/initiate/stripe', {
+      method: 'POST',
+      body: JSON.stringify({ orderId }),
+      token,
+    }),
+};

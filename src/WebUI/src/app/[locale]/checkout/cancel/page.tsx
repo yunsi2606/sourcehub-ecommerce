@@ -22,10 +22,10 @@ export default async function CheckoutCancelPage() {
 
         <div className="flex flex-col gap-4">
           <Link
-            href="/pricing"
+            href="/cart"
             className="h-14 flex items-center justify-center bg-primary hover:bg-primary-hover text-white rounded-xl font-bold transition-all shadow-soft text-lg"
           >
-            {t("backToPricing")}
+            {t("backToCart")}
           </Link>
           <Link
             href="/"

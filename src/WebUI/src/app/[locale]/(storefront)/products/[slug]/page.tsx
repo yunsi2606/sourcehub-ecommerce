@@ -1,27 +1,34 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { Link } from "@/i18n/routing";
+import { Link, useRouter } from "@/i18n/routing";
 import { productApi } from "@/lib/api/products";
 import { ChevronRight, FileCode2, ShieldCheck, ShoppingCart, Zap } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useParams, notFound } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeletons";
+import { useFormatPrice } from "@/hooks/useFormatPrice";
+import { useCartStore } from "@/stores/cartStore";
 
 export default function ProductDetailPage() {
   const params = useParams();
   const slug = params.slug as string;
   const t = useTranslations("ProductDetail");
+  const router = useRouter();
+  const formatPrice = useFormatPrice();
+  const { addItem } = useCartStore();
 
   const [product, setProduct] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [selectedAddons, setSelectedAddons] = useState<string[]>([]);
 
   useEffect(() => {
     setIsLoading(true);
     productApi.getBySlug(slug)
       .then((data) => {
         setProduct(data);
+        setSelectedAddons([]);
       })
       .catch((e) => {
         console.error("Failed to fetch product detail:", e);
@@ -57,6 +64,30 @@ export default function ProductDetailPage() {
   }
 
   if (!product) return null;
+
+  const handleToggleAddon = (addonId: string) => {
+    setSelectedAddons(prev => 
+      prev.includes(addonId) ? prev.filter(id => id !== addonId) : [...prev, addonId]
+    );
+  };
+
+  const handleBuyNow = () => {
+    const selectedAddonData = product.addons ? product.addons.filter((a: any) => selectedAddons.includes(a.id)) : [];
+    addItem({
+      productId: product.id,
+      title: product.title,
+      slug: product.slug,
+      category: product.categoryName,
+      price: product.salePrice ?? product.price,
+      thumbnailUrl: product.thumbnailUrl,
+      addons: selectedAddonData.map((a: any) => ({
+        id: a.id,
+        name: a.name,
+        price: a.price
+      }))
+    });
+    router.push('/cart');
+  };
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -117,17 +148,20 @@ export default function ProductDetailPage() {
             <div className="flex items-baseline gap-2 mb-8 pb-8 border-b border-slate-100">
               {product.salePrice ? (
                 <>
-                  <span className="text-4xl font-extrabold text-slate-900">${product.salePrice}</span>
-                  <span className="text-lg text-slate-400 line-through">${product.price}</span>
+                  <span className="text-4xl font-extrabold text-slate-900">{formatPrice(product.salePrice)}</span>
+                  <span className="text-lg text-slate-400 line-through">{formatPrice(product.price)}</span>
                 </>
               ) : (
-                <span className="text-4xl font-extrabold text-slate-900">${product.price}</span>
+                <span className="text-4xl font-extrabold text-slate-900">{formatPrice(product.price)}</span>
               )}
-              <span className="text-sm text-slate-500 ml-1">/ one-time</span>
+              <span className="text-sm text-slate-500 ml-1">/ {product.billingCycle === 'Monthly' ? 'monthly' : product.billingCycle === 'Yearly' ? 'yearly' : 'one-time'}</span>
             </div>
 
             <div className="space-y-4 mb-8">
-              <button className="w-full h-12 bg-primary hover:bg-primary-hover text-white rounded-xl font-bold transition-all shadow-soft hover:shadow-soft-hover flex items-center justify-center gap-2">
+              <button 
+                onClick={handleBuyNow}
+                className="w-full h-12 bg-primary hover:bg-primary-hover text-white rounded-xl font-bold transition-all shadow-soft hover:shadow-soft-hover flex items-center justify-center gap-2"
+              >
                 <ShoppingCart className="w-5 h-5" /> {t("buyNow")}
               </button>
             </div>
@@ -158,11 +192,16 @@ export default function ProductDetailPage() {
                 <div className="space-y-3">
                   {product.addons.map((addon: any) => (
                     <label key={addon.id} className="flex items-center gap-3 p-3 border border-slate-200 rounded-xl cursor-pointer hover:border-primary/50 transition-colors">
-                      <input type="checkbox" className="w-4 h-4 text-primary rounded border-slate-300 focus:ring-primary" />
+                      <input 
+                        type="checkbox" 
+                        checked={selectedAddons.includes(addon.id)}
+                        onChange={() => handleToggleAddon(addon.id)}
+                        className="w-4 h-4 text-primary rounded border-slate-300 focus:ring-primary" 
+                      />
                       <div className="flex-1">
                         <p className="text-sm font-medium text-slate-900">{addon.name}</p>
                       </div>
-                      <span className="text-sm font-bold text-slate-900">+${addon.price}</span>
+                      <span className="text-sm font-bold text-slate-900">+{formatPrice(addon.price)}</span>
                     </label>
                   ))}
                 </div>

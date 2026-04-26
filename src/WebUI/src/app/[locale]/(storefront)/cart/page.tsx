@@ -4,49 +4,28 @@ import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/routing";
 import { ArrowRight, Trash2 } from "lucide-react";
 import { useCartStore } from "@/stores/cartStore";
-import { orderApi } from "@/lib/api";
 import { useAuthStore } from "@/stores/authStore";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/routing";
+import { useFormatPrice } from "@/hooks/useFormatPrice";
 
 export default function CartPage() {
   const t = useTranslations("Cart");
   const router = useRouter();
   const { items, removeItem, clearCart } = useCartStore();
   const accessToken = useAuthStore((s) => s.accessToken);
-  const [checkoutLoading, setCheckoutLoading] = useState(false);
-  const [checkoutError, setCheckoutError] = useState<string | null>(null);
+  const formatPrice = useFormatPrice();
 
   const subtotal = items.reduce(
     (acc, item) => acc + item.price + item.addons.reduce((a, b) => a + b.price, 0),
     0
   );
 
-  const handleCheckout = async () => {
+  const handleCheckout = () => {
     if (!accessToken) {
-      router.push("/auth/login");
+      router.push("/login");
       return;
     }
-    setCheckoutLoading(true);
-    setCheckoutError(null);
-    try {
-      const order = await orderApi.create(
-        {
-          items: items.map((item) => ({
-            productId: item.productId,
-            quantity: 1,
-            selectedAddonIds: item.addons.map((a) => a.id),
-          })),
-        },
-        accessToken
-      );
-      clearCart();
-      router.push(`/dashboard/orders/${order.id}`);
-    } catch (err) {
-      setCheckoutError(err instanceof Error ? err.message : "Checkout failed. Please try again.");
-    } finally {
-      setCheckoutLoading(false);
-    }
+    router.push("/checkout");
   };
 
   if (items.length === 0) {
@@ -99,14 +78,14 @@ export default function CartPage() {
                 <div className="mt-4 space-y-2">
                   <div className="flex justify-between text-sm">
                     <span className="text-slate-600">{t("baseLicense")}</span>
-                    <span className="font-bold text-slate-900">${item.price}</span>
+                    <span className="font-bold text-slate-900">{formatPrice(item.price)}</span>
                   </div>
                   {item.addons.map((addon) => (
                     <div key={addon.id} className="flex justify-between text-sm">
                       <span className="text-slate-500 flex items-center gap-2">
                         <span className="w-1.5 h-1.5 rounded-full bg-slate-300"></span> {addon.name}
                       </span>
-                      <span className="font-medium text-slate-700">+${addon.price}</span>
+                      <span className="font-medium text-slate-700">+{formatPrice(addon.price)}</span>
                     </div>
                   ))}
                 </div>
@@ -123,29 +102,24 @@ export default function CartPage() {
             <div className="space-y-4 mb-6 pb-6 border-b border-slate-100">
               <div className="flex justify-between text-sm">
                 <span className="text-slate-600">{t("subtotal")}</span>
-                <span className="font-medium text-slate-900">${subtotal.toFixed(2)}</span>
+                <span className="font-medium text-slate-900">{formatPrice(subtotal)}</span>
               </div>
               <div className="flex justify-between text-sm text-success">
                 <span>{t("discount")}</span>
-                <span className="font-medium">-$0.00</span>
+                <span className="font-medium">-{formatPrice(0)}</span>
               </div>
             </div>
 
             <div className="flex justify-between items-end mb-8">
               <span className="text-slate-900 font-bold">{t("total")}</span>
-              <span className="text-3xl font-extrabold text-slate-900">${subtotal.toFixed(2)}</span>
+              <span className="text-3xl font-extrabold text-slate-900">{formatPrice(subtotal)}</span>
             </div>
 
-            {checkoutError && (
-              <p className="text-sm text-red-600 mb-4">{checkoutError}</p>
-            )}
-
             <button
-              disabled={checkoutLoading}
               onClick={handleCheckout}
-              className="w-full h-12 bg-primary hover:bg-primary-hover text-white rounded-xl font-bold transition-all shadow-soft hover:shadow-soft-hover flex items-center justify-center gap-2 disabled:opacity-60"
+              className="w-full h-12 bg-primary hover:bg-primary-hover text-white rounded-xl font-bold transition-all shadow-soft hover:shadow-soft-hover flex items-center justify-center gap-2"
             >
-              {checkoutLoading ? "Processing..." : t("checkout")} {!checkoutLoading && <ArrowRight className="w-4 h-4" />}
+              {t("checkout")} <ArrowRight className="w-4 h-4" />
             </button>
           </div>
         </div>

@@ -12,7 +12,8 @@ public record PlanDto(
     decimal MonthlyPrice,
     decimal YearlyPrice,
     bool IsActive,
-    List<string> Features
+    List<string> Features,
+    string Currency = "VND"
 );
 
 // User's current plan info

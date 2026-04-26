@@ -87,7 +87,7 @@ public class OrderService(IApplicationDbContext db)
             .Skip((q.Page - 1) * q.PageSize).Take(q.PageSize)
             .Select(o => new OrderSummaryDto(
                 o.Id, o.Status, o.SubTotal, o.DiscountAmount, o.TotalAmount,
-                o.Items.Count, o.CreatedAt))
+                o.Items.Count, o.CreatedAt, q.Currency))
             .ToListAsync(ct);
     }
 
@@ -103,7 +103,7 @@ public class OrderService(IApplicationDbContext db)
             .Skip((q.Page - 1) * q.PageSize).Take(q.PageSize)
             .Select(o => new OrderSummaryDto(
                 o.Id, o.Status, o.SubTotal, o.DiscountAmount, o.TotalAmount,
-                o.Items.Count, o.CreatedAt))
+                o.Items.Count, o.CreatedAt, q.Currency))
             .ToListAsync(ct);
     }
 

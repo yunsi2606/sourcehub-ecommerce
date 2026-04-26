@@ -41,7 +41,8 @@ public record OrderSummaryDto(
     decimal DiscountAmount,
     decimal TotalAmount,
     int ItemCount,
-    DateTime CreatedAt
+    DateTime CreatedAt,
+    string Currency = "VND"
 );
 
 public record OrderDetailDto(
@@ -54,7 +55,8 @@ public record OrderDetailDto(
     string? Notes,
     List<OrderItemDto> Items,
     List<PaymentDto> Payments,
-    DateTime CreatedAt
+    DateTime CreatedAt,
+    string Currency = "VND"
 );
 
 public record PaymentDto(
@@ -93,6 +95,7 @@ public record DownloadUrlResponse(
 
 public record OrderQueryParams(
     OrderStatus? Status,
+    string Currency = "VND",
     int Page = 1,
     int PageSize = 10
 );

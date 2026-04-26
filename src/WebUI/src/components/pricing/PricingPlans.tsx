@@ -6,6 +6,7 @@ import { Plan } from "@/lib/types/plans";
 import { plansApi } from "@/lib/api/plans";
 import { toast } from "sonner";
 import { useAuthStore } from "@/stores/authStore";
+import { useFormatPrice } from "@/hooks/useFormatPrice";
 
 interface PricingPlansProps {
   translations: {
@@ -28,6 +29,7 @@ export default function PricingPlans({ translations: t }: PricingPlansProps) {
   const [loadingPlanId, setLoadingPlanId] = useState<string | null>(null);
   const { user, accessToken } = useAuthStore();
   const isAuthenticated = !!user;
+  const formatPrice = useFormatPrice();
 
   useEffect(() => {
     const fetchPlans = async () => {
@@ -130,7 +132,7 @@ export default function PricingPlans({ translations: t }: PricingPlansProps) {
               
               <div className="mb-8">
                 <span className={`text-4xl font-extrabold ${isPopular ? 'text-white' : 'text-slate-900'}`}>
-                  ${price}
+                  {formatPrice(price)}
                 </span>
                 <span className={isPopular ? 'text-slate-400' : 'text-slate-500'}>
                   /{isYearly ? 'yr' : 'mo'}

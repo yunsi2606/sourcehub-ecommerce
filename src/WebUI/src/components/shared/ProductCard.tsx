@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { useFormatPrice } from "@/hooks/useFormatPrice";
 
 interface ProductCardProps {
   title: string;
@@ -23,6 +26,8 @@ export function ProductCard({
   tags,
   version
 }: ProductCardProps) {
+  const formatPrice = useFormatPrice();
+
   return (
     <div className="group rounded-2xl border border-slate-200 bg-white p-4 shadow-soft transition-all hover:shadow-soft-hover flex flex-col h-full">
       <div className="aspect-[16/9] w-full rounded-xl bg-slate-100 mb-6 overflow-hidden relative border border-slate-100">
@@ -58,11 +63,11 @@ export function ProductCard({
           <div className="flex items-center gap-1">
             {salePrice ? (
               <>
-                <span className="text-slate-400 line-through text-sm mr-1">${price}</span>
-                <span className="text-xl font-bold text-success">${salePrice}</span>
+                <span className="text-slate-400 line-through text-sm mr-1">{formatPrice(price)}</span>
+                <span className="text-xl font-bold text-success">{formatPrice(salePrice)}</span>
               </>
             ) : (
-              <span className="text-xl font-bold text-slate-900">${price}</span>
+              <span className="text-xl font-bold text-slate-900">{formatPrice(price)}</span>
             )}
           </div>
           <button className="text-sm font-medium text-primary hover:text-primary-hover">View Details</button>

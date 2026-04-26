@@ -5,6 +5,7 @@ import { Search, ShoppingCart, User, LayoutDashboard, LogOut } from "lucide-reac
 import { useTranslations } from "next-intl";
 import { useAuthStore } from "@/stores/authStore";
 import { useEffect, useState } from "react";
+import { CurrencySelector } from "@/components/shared/CurrencySelector";
 
 export function Navbar({ initialIsLoggedIn = false }: { initialIsLoggedIn?: boolean }) {
   const t = useTranslations("Navbar");
@@ -37,6 +38,9 @@ export function Navbar({ initialIsLoggedIn = false }: { initialIsLoggedIn?: bool
         </div>
 
         <div className="flex items-center gap-4">
+          <div className="hidden md:block">
+            <CurrencySelector />
+          </div>
           <div className="relative hidden md:block group">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-primary transition-colors" />
             <input

@@ -7,19 +7,17 @@ import { Box, Code2, AlertCircle, ExternalLink, ToggleLeft, ToggleRight } from "
 import { adminProductApi } from "@/lib/api";
 import { useAuthStore } from "@/stores/authStore";
 import { ProductSummary } from "@/types/api";
+import { useFormatPrice } from "@/hooks/useFormatPrice";
 
 const TYPE_BADGE: Record<string, string> = {
   SourceCode: "bg-indigo-50 text-indigo-700 border-indigo-200",
   StandaloneService: "bg-purple-50 text-purple-700 border-purple-200",
 };
 
-function formatCurrency(n: number) {
-  return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(n);
-}
-
 export default function AdminProductsPage() {
   const t = useTranslations("Dashboard");
   const accessToken = useAuthStore((s) => s.accessToken);
+  const formatPrice = useFormatPrice();
   const [products, setProducts] = useState<ProductSummary[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -122,10 +120,10 @@ export default function AdminProductsPage() {
                       <td className="px-6 py-4 font-medium text-slate-900">
                         {p.salePrice ? (
                           <span>
-                            {formatCurrency(p.salePrice)}{" "}
-                            <span className="text-xs text-slate-400 line-through">{formatCurrency(p.price)}</span>
+                            {formatPrice(p.salePrice)}{" "}
+                            <span className="text-xs text-slate-400 line-through">{formatPrice(p.price)}</span>
                           </span>
-                        ) : formatCurrency(p.price)}
+                        ) : formatPrice(p.price)}
                       </td>
                       <td className="px-6 py-4 text-slate-600">{p.categoryName}</td>
                       <td className="px-6 py-4 text-center">

@@ -4,8 +4,9 @@ import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { FileCode2, Clock, CheckCircle2, CircleDashed, AlertCircle } from "lucide-react";
 import { adminServiceProjectApi } from "@/lib/api";
-import { useAuthStore } from "@/stores/authStore";
 import { ServiceProjectDto } from "@/types/api";
+import { CustomSelect } from "@/components/ui/select";
+import { useAuthStore } from "@/stores/authStore";
 
 export default function AdminServicesPage() {
   const t = useTranslations("Dashboard");
@@ -55,18 +56,21 @@ export default function AdminServicesPage() {
         </div>
 
         {/* Status filter */}
-        <select
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-          className="h-10 px-3 rounded-xl border border-slate-200 text-sm text-slate-700 bg-white outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
-        >
-          <option value="">Tất cả trạng thái</option>
-          <option value="Pending">Pending</option>
-          <option value="InProgress">In Progress</option>
-          <option value="InReview">In Review</option>
-          <option value="Completed">Completed</option>
-          <option value="Cancelled">Cancelled</option>
-        </select>
+        <div className="w-48">
+          <CustomSelect
+            value={statusFilter}
+            onChange={setStatusFilter}
+            options={[
+              { value: "", label: "Tất cả trạng thái" },
+              { value: "Pending", label: "Pending" },
+              { value: "InProgress", label: "In Progress" },
+              { value: "InReview", label: "In Review" },
+              { value: "Completed", label: "Completed" },
+              { value: "Cancelled", label: "Cancelled" },
+            ]}
+            className="h-10 py-1.5"
+          />
+        </div>
       </div>
 
       {isLoading ? (

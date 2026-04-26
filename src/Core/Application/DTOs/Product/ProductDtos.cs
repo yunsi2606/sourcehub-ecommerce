@@ -72,7 +72,8 @@ public record ProductSummaryDto(
     int TotalSales,
     bool IsActive,
     bool IsFeatured,
-    DateTime CreatedAt
+    DateTime CreatedAt,
+    string Currency = "VND"
 );
 
 public record ProductDetailDto(
@@ -98,7 +99,8 @@ public record ProductDetailDto(
     bool IsActive,
     bool IsFeatured,
     DateTime CreatedAt,
-    string? ThumbnailUrl
+    string? ThumbnailUrl,
+    string Currency = "VND"
 );
 
 public record ProductListResponse(

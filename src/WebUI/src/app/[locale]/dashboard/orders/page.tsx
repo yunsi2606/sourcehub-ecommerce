@@ -7,6 +7,7 @@ import { AlertCircle } from "lucide-react";
 import { adminOrderApi } from "@/lib/api";
 import { useAuthStore } from "@/stores/authStore";
 import { OrderSummary } from "@/types/api";
+import { useFormatPrice } from "@/hooks/useFormatPrice";
 
 const STATUS_STYLES: Record<string, string> = {
   Pending: "bg-yellow-50 text-yellow-700 border-yellow-200",
@@ -32,13 +33,10 @@ function formatDate(dateStr: string) {
   });
 }
 
-function formatCurrency(amount: number) {
-  return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(amount);
-}
-
 export default function AdminOrdersPage() {
   const t = useTranslations("Dashboard");
   const accessToken = useAuthStore((s) => s.accessToken);
+  const formatPrice = useFormatPrice();
   const [orders, setOrders] = useState<OrderSummary[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -114,7 +112,7 @@ export default function AdminOrdersPage() {
                           </span>
                         </td>
                         <td className="px-6 py-4 text-slate-900 font-semibold">
-                          {formatCurrency(order.totalAmount)}
+                          {formatPrice(order.totalAmount)}
                         </td>
                         <td className="px-6 py-4 text-right">
                           <Link

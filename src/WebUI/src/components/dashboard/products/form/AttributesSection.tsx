@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 import { Check, ChevronDown, X } from "lucide-react";
 import { ProductFormData } from "../ProductForm";
 import { Category, Tag } from "@/types/api";
+import { CustomSelect } from "@/components/ui/select";
 
 interface Props {
   formData: ProductFormData;
@@ -67,22 +68,12 @@ export function AttributesSection({
             className="w-full px-4 py-2.5 rounded-xl border border-primary bg-primary/5 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm"
           />
         ) : (
-          <div className="relative">
-            <select
-              name="categoryId"
-              required
-              value={formData.categoryId}
-              onChange={onChange}
-              className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary appearance-none transition-all cursor-pointer"
-            >
-              {categories.map((cat) => (
-                <option key={cat.id} value={cat.id}>
-                  {cat.name}
-                </option>
-              ))}
-            </select>
-            <ChevronDown className="w-4 h-4 text-slate-400 absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" />
-          </div>
+          <CustomSelect
+            value={formData.categoryId}
+            onChange={(val) => onChange({ target: { name: "categoryId", value: val } } as any)}
+            options={categories.map((cat) => ({ value: cat.id, label: cat.name }))}
+            placeholder={t("category")}
+          />
         )}
       </div>
 
@@ -106,11 +97,10 @@ export function AttributesSection({
                 key={tag.id}
                 type="button"
                 onClick={() => handleTagToggle(tag.id)}
-                className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors border ${
-                  isSelected
+                className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors border ${isSelected
                     ? "bg-primary text-white border-primary"
                     : "bg-slate-50 text-slate-600 border-slate-200 hover:border-slate-300"
-                }`}
+                  }`}
               >
                 {tag.name}
                 {isSelected && <X className="w-3 h-3 inline ml-1 opacity-70" />}

@@ -6,6 +6,7 @@ import { getMessages } from 'next-intl/server';
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { SessionProvider } from "@/components/providers/SessionProvider";
+import { CurrencyProvider } from "@/components/shared/CurrencyProvider";
 import { cookies } from "next/headers";
 import { Toaster } from "sonner";
 
@@ -41,12 +42,14 @@ export default async function RootLayout({
       <body className="min-h-screen flex flex-col font-sans bg-background text-foreground">
         <NextIntlClientProvider messages={messages}>
           <SessionProvider>
-            <Navbar initialIsLoggedIn={hasUserRole} />
-            <main className="flex-1 flex flex-col">
-              {children}
-            </main>
-            <Footer />
-            <Toaster position="top-center" richColors />
+            <CurrencyProvider>
+              <Navbar initialIsLoggedIn={hasUserRole} />
+              <main className="flex-1 flex flex-col">
+                {children}
+              </main>
+              <Footer />
+              <Toaster position="top-center" richColors />
+            </CurrencyProvider>
           </SessionProvider>
         </NextIntlClientProvider>
       </body>

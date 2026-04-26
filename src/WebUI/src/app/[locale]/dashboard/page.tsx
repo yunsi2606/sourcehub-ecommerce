@@ -7,10 +7,12 @@ import { ArrowUpRight, Code2, Cpu, ShoppingBag } from "lucide-react";
 import { adminOrderApi, adminProductApi, adminServiceProjectApi } from "@/lib/api";
 import { useAuthStore } from "@/stores/authStore";
 import { OrderSummary, ProductSummary, ServiceProjectDto } from "@/types/api";
+import { useFormatPrice } from "@/hooks/useFormatPrice";
 
 export default function DashboardOverview() {
   const t = useTranslations("Dashboard");
   const { user, accessToken } = useAuthStore();
+  const formatPrice = useFormatPrice();
 
   const [orders, setOrders] = useState<OrderSummary[]>([]);
   const [products, setProducts] = useState<ProductSummary[]>([]);
@@ -35,9 +37,6 @@ export default function DashboardOverview() {
   const totalRevenue = orders.reduce((sum, o) => sum + o.totalAmount, 0);
   const activeServices = services.filter((s) => s.status === "InProgress" || s.status === "Pending").length;
 
-  const formatCurrency = (n: number) =>
-    new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(n);
-
   const Skeleton = ({ w }: { w: string }) => (
     <span className={`inline-block h-7 ${w} bg-slate-100 rounded animate-pulse`} />
   );
@@ -60,7 +59,7 @@ export default function DashboardOverview() {
           </div>
           <p className="text-sm font-medium text-slate-500 mb-1">Doanh thu gần đây</p>
           <h3 className="text-2xl font-bold text-slate-900">
-            {loading ? <Skeleton w="w-24" /> : formatCurrency(totalRevenue)}
+            {loading ? <Skeleton w="w-24" /> : formatPrice(totalRevenue)}
           </h3>
           <p className="text-xs text-slate-400 mt-1">5 đơn hàng gần nhất</p>
         </div>
@@ -121,7 +120,7 @@ export default function DashboardOverview() {
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
-                  <span className="font-semibold text-slate-900 text-sm">{formatCurrency(order.totalAmount)}</span>
+                  <span className="font-semibold text-slate-900 text-sm">{formatPrice(order.totalAmount)}</span>
                   <Link href={`/dashboard/orders/${order.id}`} className="h-8 w-8 flex items-center justify-center rounded-lg border border-slate-200 hover:bg-white transition-colors">
                     <ArrowUpRight className="w-4 h-4 text-slate-500" />
                   </Link>

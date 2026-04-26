@@ -9,6 +9,7 @@ import { BlogCategoryDto, CreatePostRequest, PostDetailDto } from "@/types/api";
 import { ArrowLeft, Save, Image as ImageIcon } from "lucide-react";
 import { toast } from "sonner";
 import { TiptapEditor } from "@/components/dashboard/blog/TiptapEditor";
+import { CustomSelect } from "@/components/ui/select";
 import Link from "next/link";
 
 export default function BlogEditPage({ params }: { params: Promise<{ id: string }> }) {
@@ -112,15 +113,18 @@ export default function BlogEditPage({ params }: { params: Promise<{ id: string 
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <select
-            value={formData.status}
-            onChange={e => setFormData({ ...formData, status: e.target.value as any })}
-            className="px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-medium bg-slate-50 text-slate-700 outline-none focus:border-primary"
-          >
-            <option value="Draft">Bản nháp (Draft)</option>
-            <option value="Published">Xuất bản (Published)</option>
-            <option value="Archived">Lưu trữ (Archived)</option>
-          </select>
+          <div className="w-48">
+            <CustomSelect
+              value={formData.status}
+              onChange={(val) => setFormData({ ...formData, status: val as any })}
+              options={[
+                { value: "Draft", label: "Bản nháp (Draft)" },
+                { value: "Published", label: "Xuất bản (Published)" },
+                { value: "Archived", label: "Lưu trữ (Archived)" },
+              ]}
+              className="py-2.5"
+            />
+          </div>
 
           <button
             onClick={handleSave}
@@ -176,16 +180,14 @@ export default function BlogEditPage({ params }: { params: Promise<{ id: string 
             {/* Category */}
             <div>
               <label className="block text-sm font-bold text-slate-700 mb-2">Danh mục</label>
-              <select
+              <CustomSelect
                 value={formData.blogCategoryId || ""}
-                onChange={e => setFormData({ ...formData, blogCategoryId: e.target.value || null })}
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-slate-900 outline-none focus:border-primary"
-              >
-                <option value="">-- Chưa phân loại --</option>
-                {categories.map(c => (
-                  <option key={c.id} value={c.id}>{c.name}</option>
-                ))}
-              </select>
+                onChange={(val) => setFormData({ ...formData, blogCategoryId: val || null })}
+                options={[
+                  { value: "", label: "-- Chưa phân loại --" },
+                  ...categories.map(c => ({ value: c.id, label: c.name }))
+                ]}
+              />
             </div>
 
             <hr className="border-slate-100" />

@@ -12,47 +12,21 @@ export const fileApi = {
     const formData = new FormData();
     formData.append('file', file);
 
-    const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:5000/api/v1';
-
-    // We use a raw fetch here because apiFetch sets Content-Type to application/json
-    // For FormData, the browser must automatically set Content-Type to multipart/form-data with the correct boundary
-    const res = await fetch(`${API_BASE}/files/upload`, {
+    return apiFetch<UploadResponse>('/files/upload', {
       method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${token}`
-      },
+      token,
       body: formData,
-      credentials: 'omit' // Admin endpoint usually expects Bearer token
     });
-
-    if (!res.ok) {
-      const errorText = await res.text();
-      throw new Error(errorText || 'Upload failed');
-    }
-
-    return res.json();
   },
 
   uploadMediaTemp: async (file: File, token: string): Promise<UploadResponse & { mimeType: string }> => {
     const formData = new FormData();
     formData.append('file', file);
 
-    const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:5000/api/v1';
-
-    const res = await fetch(`${API_BASE}/files/upload-media`, {
+    return apiFetch<UploadResponse & { mimeType: string }>('/files/upload-media', {
       method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${token}`
-      },
+      token,
       body: formData,
-      credentials: 'omit'
     });
-
-    if (!res.ok) {
-      const errorText = await res.text();
-      throw new Error(errorText || 'Media upload failed');
-    }
-
-    return res.json();
   }
 };

@@ -114,7 +114,7 @@ public class ProductService(IApplicationDbContext db, IStorageService storage)
         if (!string.IsNullOrWhiteSpace(req.ThumbnailUrl) && req.ThumbnailUrl.StartsWith("temp/"))
         {
             var fileName = req.ThumbnailUrl.Split('/').Last();
-            var destKey = $"products/{product.Id}/{fileName}";
+            var destKey = $"{DateTime.UtcNow:yyyy/MM/dd}/products/{product.Id}/{fileName}";
             
             await storage.CopyAsync(req.ThumbnailUrl, destKey, true, ct);
             
@@ -167,7 +167,7 @@ public class ProductService(IApplicationDbContext db, IStorageService storage)
         if (!string.IsNullOrWhiteSpace(req.ThumbnailUrl) && req.ThumbnailUrl.StartsWith("temp/"))
         {
             var fileName = req.ThumbnailUrl.Split('/').Last();
-            var destKey = $"products/{product.Id}/{fileName}";
+            var destKey = $"{DateTime.UtcNow:yyyy/MM/dd}/products/{product.Id}/{fileName}";
             
             await storage.CopyAsync(req.ThumbnailUrl, destKey, true, ct);
             

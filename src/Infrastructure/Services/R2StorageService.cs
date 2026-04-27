@@ -89,15 +89,20 @@ public class R2StorageService : IStorageService, IDisposable
     {
         var bucketName = isPublic ? _options.PublicBucketName : _options.PrivateBucketName;
         
-        var request = new CopyObjectRequest
-        {
-            SourceBucket = bucketName,
-            SourceKey = sourceObjectKey,
-            DestinationBucket = bucketName,
-            DestinationKey = destinationObjectKey
-        };
+        // Perform the copy manually via GetObject → PutObject.
+        var getResponse = await _s3Client.GetObjectAsync(bucketName, sourceObjectKey, ct);
+        var memoryStream = new MemoryStream();
+        await getResponse.ResponseStream.CopyToAsync(memoryStream, ct);
+        memoryStream.Position = 0;
 
-        await _s3Client.CopyObjectAsync(request, ct);
+        await _s3Client.PutObjectAsync(new PutObjectRequest
+        {
+            BucketName = bucketName,
+            Key = destinationObjectKey,
+            InputStream = memoryStream,
+            ContentType = getResponse.Headers.ContentType,
+            DisablePayloadSigning = true
+        }, ct);
     }
 
     /// <inheritdoc />

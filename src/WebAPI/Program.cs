@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.HttpOverrides;
 using SourceEcommerce.API.Extensions;
 using SourceEcommerce.Application;
 using SourceEcommerce.Infrastructure;
@@ -21,6 +22,14 @@ builder.Services.AddControllers()
 
 // Authentication (Custom JWT)
 builder.Services.AddCustomJwtAuth(builder.Configuration);
+
+// Forwarded Headers (for reverse proxy/Cloudflare Tunnel)
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedHost;
+    options.KnownNetworks.Clear();
+    options.KnownProxies.Clear();
+});
 
 // OpenAPI (built-in .NET 10)
 builder.Services.AddOpenApiWithAuth();
@@ -49,6 +58,7 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();  // serves /openapi/v1.json
 }
 
+app.UseForwardedHeaders();
 app.UseHttpsRedirection();
 app.UseCors("NextJsClient");
 

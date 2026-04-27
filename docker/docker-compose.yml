@@ -25,6 +25,16 @@ services:
 
       # CORS
       - AllowedOrigins__NextJs=${ALLOWED_ORIGINS_NEXTJS}
+      - FrontendUrl=${FRONTEND_URL}
+      - BackendUrl=${BACKEND_URL}
+
+      # Google OAuth
+      - Google__ClientId=${GOOGLE_CLIENT_ID}
+      - Google__ClientSecret=${GOOGLE_CLIENT_SECRET}
+
+      # GitHub OAuth
+      - GitHub__ClientId=${GITHUB_CLIENT_ID}
+      - GitHub__ClientSecret=${GITHUB_CLIENT_SECRET}
 
       # Stripe Settings
       - Stripe__SecretKey=${STRIPE_SECRET_KEY}

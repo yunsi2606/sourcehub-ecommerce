@@ -20,6 +20,8 @@ public static class DependencyInjection
         services.AddScoped<PlanService>();
         services.AddScoped<BlogService>();
         services.AddScoped<PaymentService>();
+        services.AddScoped<OAuthService>();
+        services.AddHttpClient();
 
         return services;
     }

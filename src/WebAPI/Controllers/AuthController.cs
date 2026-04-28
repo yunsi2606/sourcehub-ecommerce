@@ -78,12 +78,15 @@ public class AuthController(AuthService authService) : BaseApiController
 
     [HttpGet("me")]
     [Authorize]
-    public IActionResult Me()
+    public async Task<IActionResult> Me(CancellationToken ct)
     {
-        var id = User.FindFirst("sub")?.Value;
-        var email = User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value;
-        var role = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
-        return Ok(new { id, email, role });
+        var idClaim = User.FindFirst("sub")?.Value;
+        if (!Guid.TryParse(idClaim, out var id)) return Unauthorized();
+        
+        var profile = await authService.GetProfileAsync(id, ct);
+        if (profile == null) return NotFound();
+        
+        return Ok(profile);
     }
 
     // Helpers

@@ -157,15 +157,26 @@ public class OAuthController(OAuthService oauthService, IConfiguration config) :
 
     // Helpers
 
-    private void SetRefreshCookie(string token) =>
-        Response.Cookies.Append(RefreshTokenCookie, token, new CookieOptions
+    private void SetRefreshCookie(string token)
+    {
+        var options = new CookieOptions
         {
             HttpOnly = true,
             Secure = true,
             SameSite = SameSiteMode.None,
             Path = "/",
             Expires = DateTimeOffset.UtcNow.AddDays(7),
-        });
+        };
+
+        // Share cookie across subdomains (e.g. api-sourcehub and sourcehub on same apex domain)
+        var frontendUrl = config["FrontendUrl"] ?? "";
+        if (frontendUrl.Contains("nhatcuong.io.vn"))
+        {
+            options.Domain = ".nhatcuong.io.vn";
+        }
+
+        Response.Cookies.Append(RefreshTokenCookie, token, options);
+    }
 
     private string BuildCallbackUrl(string provider)
     {

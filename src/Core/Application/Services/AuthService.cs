@@ -72,6 +72,13 @@ public class AuthService(IApplicationDbContext db, IJwtTokenService jwtTokenServ
         await db.SaveChangesAsync(ct);
     }
 
+    public async Task<UserProfileDto?> GetProfileAsync(Guid userId, CancellationToken ct)
+    {
+        var user = await db.Users.FindAsync([userId], ct);
+        if (user == null) return null;
+        return new UserProfileDto(user.Id, user.FullName, user.Email, user.AvatarUrl, user.Role.ToString());
+    }
+
     // Private helpers
     private async Task<AuthResponse> IssueTokensAsync(User user, CancellationToken ct)
     {

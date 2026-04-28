@@ -11,11 +11,13 @@ export function Navbar({ initialIsLoggedIn = false }: { initialIsLoggedIn?: bool
   const t = useTranslations("Navbar");
   const { user } = useAuthStore();
   const [isLoggedIn, setIsLoggedIn] = useState(initialIsLoggedIn);
+  const [userRole, setUserRole] = useState<string | null>(null);
 
   useEffect(() => {
     // When the user state changes (login/logout), re-evaluate based on the real cookie
     import("js-cookie").then((Cookies) => {
       setIsLoggedIn(Cookies.default.get("user_role") !== undefined);
+      setUserRole(Cookies.default.get("user_role") || null);
     });
   }, [user]);
 
@@ -56,10 +58,12 @@ export function Navbar({ initialIsLoggedIn = false }: { initialIsLoggedIn?: bool
 
           {isLoggedIn ? (
             <div className="hidden md:flex items-center gap-2">
-              <Link href="/dashboard" className="flex items-center gap-2 px-4 py-2 rounded-full border border-slate-200 text-sm font-medium hover:bg-slate-50 transition-all text-slate-700">
-                <LayoutDashboard className="w-4 h-4" />
-                Dashboard
-              </Link>
+              {userRole?.toLowerCase() === "admin" && (
+                <Link href="/dashboard" className="flex items-center gap-2 px-4 py-2 rounded-full border border-slate-200 text-sm font-medium hover:bg-slate-50 transition-all text-slate-700">
+                  <LayoutDashboard className="w-4 h-4" />
+                  Dashboard
+                </Link>
+              )}
               <Link href="/profile" className="flex items-center gap-2 px-4 py-2 rounded-full border border-primary text-primary text-sm font-medium hover:bg-primary/5 transition-all">
                 <User className="w-4 h-4" />
                 {t("profile")}

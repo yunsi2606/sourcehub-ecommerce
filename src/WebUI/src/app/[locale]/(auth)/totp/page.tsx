@@ -6,19 +6,21 @@ import { Shield, Loader2, ArrowLeft } from "lucide-react";
 import { useAuthStore } from "@/stores/authStore";
 import { apiFetch } from "@/lib/api/client";
 import { Link } from "@/i18n/routing";
+import { useTranslations } from "next-intl";
 
 /**
  * /auth/totp — Shown when Google OAuth login requires 2FA verification.
  * Receives ?tempToken=... from the backend redirect.
  */
 export default function TotpVerifyPage() {
-  const router       = useRouter();
+  const t = useTranslations("Auth");
+  const router = useRouter();
   const searchParams = useSearchParams();
-  const tempToken    = searchParams.get("tempToken") ?? "";
-  const { setAuth }  = useAuthStore();
+  const tempToken = searchParams.get("tempToken") ?? "";
+  const { setAuth } = useAuthStore();
 
-  const [otp, setOtp]         = useState(["", "", "", "", "", ""]);
-  const [error, setError]     = useState<string | null>(null);
+  const [otp, setOtp] = useState(["", "", "", "", "", ""]);
+  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const inputs = useRef<(HTMLInputElement | null)[]>([]);
 
@@ -80,7 +82,7 @@ export default function TotpVerifyPage() {
   if (!tempToken) {
     return (
       <div className="min-h-[70vh] flex items-center justify-center">
-        <p className="text-slate-500">Phiên đăng nhập không hợp lệ. <Link href="/login" className="text-primary underline">Đăng nhập lại</Link></p>
+        <p className="text-slate-500">{t("failedLogin")} <Link href="/login" className="text-primary underline">{t("retry")}</Link></p>
       </div>
     );
   }
@@ -92,9 +94,9 @@ export default function TotpVerifyPage() {
           <Shield className="w-8 h-8 text-primary" />
         </div>
 
-        <h1 className="text-2xl font-bold text-slate-900 mb-2">Xác thực 2 bước</h1>
+        <h1 className="text-2xl font-bold text-slate-900 mb-2">{t("twoFactorTitle")}</h1>
         <p className="text-sm text-slate-500 mb-8">
-          Mở ứng dụng <strong>Google Authenticator</strong> và nhập mã 6 chữ số.
+          {t("openApp")} <strong>Google Authenticator</strong> {t("enterCode")}
         </p>
 
         {error && (
@@ -127,13 +129,13 @@ export default function TotpVerifyPage() {
         {loading && (
           <div className="flex items-center justify-center gap-2 text-primary text-sm">
             <Loader2 className="w-4 h-4 animate-spin" />
-            Đang xác thực...
+            {t("authenticating")}
           </div>
         )}
 
         <Link href="/login" className="mt-6 inline-flex items-center gap-1 text-sm text-slate-400 hover:text-slate-600 transition-colors">
           <ArrowLeft className="w-3 h-3" />
-          Quay lại đăng nhập
+          {t("returnLogin")}
         </Link>
       </div>
     </div>

@@ -22,7 +22,7 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(url);
     }
     // Nếu có session nhưng không phải Admin
-    if (userRole !== 'Admin') {
+    if (userRole?.toLowerCase() !== 'admin') {
       const url = request.nextUrl.clone();
       const localeMatch = pathname.match(/^\/(en|vi)/);
       url.pathname = `${localeMatch ? localeMatch[0] : ''}/`; // Đẩy về trang chủ
@@ -35,7 +35,7 @@ export async function middleware(request: NextRequest) {
     const url = request.nextUrl.clone();
     const localeMatch = pathname.match(/^\/(en|vi)/);
     // Nếu là Admin -> vào Dashboard, Nếu là User -> về trang Profile hoặc Home
-    url.pathname = `${localeMatch ? localeMatch[0] : ''}${userRole === 'Admin' ? '/dashboard' : '/'}`;
+    url.pathname = `${localeMatch ? localeMatch[0] : ''}${userRole?.toLowerCase() === 'admin' ? '/dashboard' : '/'}`;
     return NextResponse.redirect(url);
   }
 

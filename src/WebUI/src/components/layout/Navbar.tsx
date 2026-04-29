@@ -64,10 +64,30 @@ export function Navbar({ initialIsLoggedIn = false }: { initialIsLoggedIn?: bool
                   Dashboard
                 </Link>
               )}
-              <Link href="/profile" className="flex items-center gap-2 px-4 py-2 rounded-full border border-primary text-primary text-sm font-medium hover:bg-primary/5 transition-all">
-                <User className="w-4 h-4" />
-                {t("profile")}
+              <Link href="/profile" className="flex items-center gap-2 pl-2 pr-4 py-1.5 rounded-full border border-primary text-primary text-sm font-medium hover:bg-primary/5 transition-all">
+                <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center overflow-hidden">
+                  {user?.avatarUrl ? (
+                    <img src={user.avatarUrl} alt={user.fullName} className="w-full h-full object-cover" />
+                  ) : (
+                    <User className="w-3.5 h-3.5 text-primary" />
+                  )}
+                </div>
+                <span className="truncate max-w-[120px]">{user?.fullName || t("profile")}</span>
               </Link>
+              <button
+                onClick={async () => {
+                  try {
+                    await fetch('/api/auth/logout', { method: 'POST' });
+                  } finally {
+                    useAuthStore.getState().clearAuth();
+                    window.location.href = '/login';
+                  }
+                }}
+                className="p-2 ml-1 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-colors"
+                title="Logout"
+              >
+                <LogOut className="w-4 h-4" />
+              </button>
             </div>
           ) : (
             <Link href="/login" className="hidden md:flex items-center gap-2 px-4 py-2 rounded-full border border-slate-200 text-sm font-medium hover:border-slate-300 hover:bg-slate-50 transition-all">

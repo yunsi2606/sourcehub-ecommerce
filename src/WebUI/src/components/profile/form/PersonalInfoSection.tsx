@@ -18,11 +18,15 @@ export default function PersonalInfoSection({ user }: PersonalInfoSectionProps) 
       
       <div className="flex items-center gap-6 mb-8 pb-8 border-b border-slate-100">
         <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center text-primary text-2xl font-bold border-2 border-white shadow-sm overflow-hidden">
-          {user.email?.[0].toUpperCase()}
+          {user.avatarUrl ? (
+            <img src={user.avatarUrl} alt={user.fullName} className="w-full h-full object-cover" />
+          ) : (
+            user.fullName?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase()
+          )}
         </div>
         <div>
           <div className="text-sm text-slate-500 mb-1">{user.role}</div>
-          <div className="text-xl font-bold text-slate-900">{user.email}</div>
+          <div className="text-xl font-bold text-slate-900">{user.fullName || user.email}</div>
         </div>
       </div>
 
@@ -31,7 +35,7 @@ export default function PersonalInfoSection({ user }: PersonalInfoSectionProps) 
           <label className="block text-sm font-medium text-slate-700 mb-2">{t("fullName")}</label>
           <input
             type="text"
-            defaultValue={user.email?.split('@')[0]}
+            defaultValue={user.fullName}
             className="w-full h-11 px-4 rounded-xl border border-slate-200 bg-slate-50 outline-none transition-all focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/20"
           />
         </div>

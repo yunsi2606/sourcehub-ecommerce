@@ -166,7 +166,15 @@
     "fullName": "Full Name",
     "confirmPassword": "Confirm Password",
     "creating": "Creating account...",
-    "haveAccount": "Already have an account?"
+    "haveAccount": "Already have an account?",
+    "authenticating": "Authenticating...",
+    "failedLogin": "Login session failed.",
+    "retry": "Please try again",
+    "twoFactorTitle": "Two-Factor Authentication",
+    "openApp": "Open the app",
+    "enterCode": "Enter 6-digit code.",
+    "verify": "Verify",
+    "returnLogin": "Return to Login"
   },
   "Cart": {
     "title": "Your Cart",

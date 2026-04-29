@@ -3,6 +3,7 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0"; // Bỏ qua lỗi self-signed ce
 import { NextRequest, NextResponse } from 'next/server';
 import { serverLogin, serverRegister, serverRefresh, serverLogout } from '@/lib/server';
 
+const API_BASE = process.env.INTERNAL_API_URL ?? process.env.NEXT_PUBLIC_API_URL ?? 'https://localhost:7169/api/v1';
 const COOKIE_NAME = 'refresh_token';
 
 function extractTokenFromSetCookie(setCookieStr: string | null): string | null {
@@ -85,4 +86,27 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ slu
       message.toLowerCase().includes('expired') ? 401 : 500;
     return NextResponse.json({ error: message }, { status });
   }
+}
+
+export async function GET(req: NextRequest, { params }: { params: Promise<{ slug: string[] }> }) {
+  const { slug } = await params;
+  const action = slug[0];
+
+  if (action === 'me') {
+    const authHeader = req.headers.get('authorization');
+    if (!authHeader) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+    try {
+      const res = await fetch(`${API_BASE}/auth/me`, {
+        headers: { Authorization: authHeader },
+      });
+      const data = await res.json();
+      if (!res.ok) return NextResponse.json(data, { status: res.status });
+      return NextResponse.json(data);
+    } catch {
+      return NextResponse.json({ error: 'Failed to fetch profile' }, { status: 500 });
+    }
+  }
+
+  return NextResponse.json({ error: 'Not found' }, { status: 404 });
 }

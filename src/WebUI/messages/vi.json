@@ -166,7 +166,15 @@
     "fullName": "Họ và tên",
     "confirmPassword": "Xác nhận mật khẩu",
     "creating": "Đang tạo tài khoản...",
-    "haveAccount": "Đã có tài khoản?"
+    "haveAccount": "Đã có tài khoản?",
+    "authenticating": "Đang xác thực...",
+    "failedLogin": "Phiên đăng nhập thất bại.",
+    "retry": "Đăng nhập lại",
+    "twoFactorTitle": "Xác thực 2 bước",
+    "openApp": "Mở ứng dụng",
+    "enterCode": "Nhập mã 6 chữ số.",
+    "verify": "Xác thực",
+    "returnLogin": "Quay lại đăng nhập"
   },
   "Cart": {
     "title": "Giỏ hàng của bạn",

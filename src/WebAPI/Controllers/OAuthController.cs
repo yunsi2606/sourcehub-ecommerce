@@ -58,7 +58,7 @@ public class OAuthController(OAuthService oauthService, IConfiguration config) :
             if (result.RequiresTotp)
             {
                 // Redirect to FE TOTP verification page with a short-lived temp token
-                return Redirect($"{frontendBase}/auth/totp?tempToken={Uri.EscapeDataString(result.TempToken!)}");
+                return Redirect($"{frontendBase}/totp?tempToken={Uri.EscapeDataString(result.TempToken!)}");
             }
 
             // Issue refresh cookie then redirect to FE with access token in query

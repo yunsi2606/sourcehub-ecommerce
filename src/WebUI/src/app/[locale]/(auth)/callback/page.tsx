@@ -39,7 +39,7 @@ export default function OAuthCallbackPage() {
           });
           if (profileRes.ok) {
             const me = await profileRes.json();
-            setAuth({ id: me.id, email: me.email, role: me.role, fullName: me.fullName, avatarUrl: me.avatarUrl }, accessToken);
+            setAuth({ id: me.id, email: me.email, role: me.role, fullName: me.fullName, avatarUrl: me.avatarUrl, totpEnabled: me.totpEnabled }, accessToken);
           }
         }
         router.replace(returnUrl.startsWith("/") ? returnUrl : "/");

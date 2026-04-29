@@ -9,7 +9,7 @@ import { Link } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
 
 /**
- * /auth/totp — Shown when Google OAuth login requires 2FA verification.
+ * /totp — Shown when Google OAuth login requires 2FA verification.
  * Receives ?tempToken=... from the backend redirect.
  */
 export default function TotpVerifyPage() {

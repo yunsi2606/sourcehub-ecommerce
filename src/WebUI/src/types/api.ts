@@ -192,6 +192,7 @@ export interface AuthUser {
   fullName: string;
   role: string;
   avatarUrl: string | null;
+  totpEnabled: boolean;
 }
 
 export interface AuthResponse {

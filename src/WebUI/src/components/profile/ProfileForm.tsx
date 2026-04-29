@@ -4,6 +4,7 @@ import { useAuthStore } from "@/stores/authStore";
 import { Loader2 } from "lucide-react";
 import BillingSection from "./form/BillingSection";
 import PersonalInfoSection from "./form/PersonalInfoSection";
+import SecuritySection from "./form/SecuritySection";
 
 export default function ProfileForm() {
   const { user } = useAuthStore();
@@ -20,6 +21,9 @@ export default function ProfileForm() {
     <div className="space-y-8">
       {/* Personal Info Section */}
       <PersonalInfoSection user={user} />
+
+      {/* Security & 2FA Section */}
+      <SecuritySection user={user} />
 
       {/* Billing & Subscription Section */}
       <BillingSection />

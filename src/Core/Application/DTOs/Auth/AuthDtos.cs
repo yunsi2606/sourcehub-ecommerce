@@ -18,7 +18,8 @@ public record UserProfileDto(
     string FullName,
     string Email,
     string? AvatarUrl,
-    string Role
+    string Role,
+    bool TotpEnabled
     );
 
 public record UpdateProfileRequest(

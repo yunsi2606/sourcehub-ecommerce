@@ -201,7 +201,7 @@ public class OAuthService(
         var accessToken = jwtTokenService.GenerateAccessToken(user);
         var refreshToken = await SaveRefreshTokenAsync(user.Id, ct);
         var expires = DateTime.UtcNow.AddMinutes(jwtTokenService.AccessTokenMinutes);
-        var dto = new UserProfileDto(user.Id, user.FullName, user.Email, user.AvatarUrl, user.Role.ToString());
+        var dto = new UserProfileDto(user.Id, user.FullName, user.Email, user.AvatarUrl, user.Role.ToString(), user.TotpEnabled);
         return new AuthResponse(accessToken, refreshToken, expires, dto);
     }
 

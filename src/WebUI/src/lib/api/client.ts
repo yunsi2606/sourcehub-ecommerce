@@ -45,8 +45,10 @@ export async function apiFetch<T>(path: string, options: FetchOptions = {}): Pro
     headers['Content-Type'] = headers['Content-Type'] || 'application/json'
   }
 
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`
+  const resolvedToken = token ?? useAuthStore.getState().accessToken
+
+  if (resolvedToken) {
+    headers['Authorization'] = `Bearer ${resolvedToken}`
   }
 
   const res = await fetch(`${API_BASE}${path}`, { 
@@ -56,7 +58,7 @@ export async function apiFetch<T>(path: string, options: FetchOptions = {}): Pro
   })
 
   // Auto-refresh on 401 (expired access token), retry once
-  if (res.status === 401 && !_retry && token) {
+  if (res.status === 401 && !_retry && resolvedToken) {
     const newToken = await tryRefreshToken()
     if (newToken) {
       return apiFetch<T>(path, { ...options, token: newToken, _retry: true })

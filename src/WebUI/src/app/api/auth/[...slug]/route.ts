@@ -1,9 +1,11 @@
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0"; // Bỏ qua lỗi self-signed certificate khi gọi localhost HTTPS từ Next.js Server
 
+export const dynamic = 'force-dynamic';
+
 import { NextRequest, NextResponse } from 'next/server';
 import { serverLogin, serverRegister, serverRefresh, serverLogout } from '@/lib/server';
 
-const API_BASE = process.env.INTERNAL_API_URL ?? process.env.NEXT_PUBLIC_API_URL ?? 'https://localhost:7169/api/v1';
+const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? 'https://localhost:7169/api/v1';
 const COOKIE_NAME = 'refresh_token';
 
 function extractTokenFromSetCookie(setCookieStr: string | null): string | null {

@@ -8,7 +8,10 @@ import { adminProductApi } from "@/lib/api/products";
 import { categoryApi, tagApi } from "@/lib/api/catalog";
 import { useAuthStore } from "@/stores/authStore";
 import { ProductForm, ProductFormData } from "@/components/dashboard/products/ProductForm";
+import { AddonsSection } from "@/components/dashboard/products/form/AddonsSection";
+import { FilesSection } from "@/components/dashboard/products/form/FilesSection";
 import { useTranslations } from "next-intl";
+import { ProductFile } from "@/types/api";
 
 export default function EditProductPage() {
   const t = useTranslations("ErrorMessages");
@@ -19,6 +22,7 @@ export default function EditProductPage() {
   const [loadingInitial, setLoadingInitial] = useState(true);
   const [error, setError] = useState("");
   const [initialData, setInitialData] = useState<Partial<ProductFormData>>();
+  const [initialFiles, setInitialFiles] = useState<ProductFile[]>([]);
 
   useEffect(() => {
     if (!accessToken) return;
@@ -50,6 +54,7 @@ export default function EditProductPage() {
         isFeatured: productRes.isFeatured,
         thumbnailUrl: productRes.thumbnailUrl,
       });
+      setInitialFiles(productRes.files || []);
       setLoadingInitial(false);
     }).catch(err => {
       setError(t("failLoadProduct"));
@@ -85,6 +90,14 @@ export default function EditProductPage() {
         </div>
       )}
       <ProductForm initialData={initialData} onSubmit={handleSubmit} isEdit={true} />
+
+      {/* These sections only make sense AFTER the product exists */}
+      {accessToken && (
+        <div className="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <FilesSection productId={productId} token={accessToken} initialFiles={initialFiles} />
+          <AddonsSection productId={productId} token={accessToken} />
+        </div>
+      )}
     </div>
   );
 }

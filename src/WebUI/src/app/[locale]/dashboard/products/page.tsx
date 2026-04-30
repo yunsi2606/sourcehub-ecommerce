@@ -15,7 +15,7 @@ const TYPE_BADGE: Record<string, string> = {
 };
 
 export default function AdminProductsPage() {
-  const t = useTranslations("Dashboard");
+  const t = useTranslations("DashboardProducts");
   const accessToken = useAuthStore((s) => s.accessToken);
   const formatPrice = useFormatPrice();
   const [products, setProducts] = useState<ProductSummary[]>([]);
@@ -23,36 +23,53 @@ export default function AdminProductsPage() {
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
+  const [typeFilter, setTypeFilter] = useState<"" | "SourceCode" | "StandaloneService">("");
   const PAGE_SIZE = 20;
 
   useEffect(() => {
     if (!accessToken) return;
     setIsLoading(true);
     adminProductApi
-      .getList(accessToken, { page, pageSize: PAGE_SIZE })
+      .getList(accessToken, { page, pageSize: PAGE_SIZE, ...(typeFilter ? { productType: typeFilter } : {}) })
       .then((res) => {
         setProducts(res.items);
         setTotal(res.totalCount);
       })
       .catch((err) => setError(err instanceof Error ? err.message : "Failed to load products."))
       .finally(() => setIsLoading(false));
-  }, [accessToken, page]);
+  }, [accessToken, page, typeFilter]);
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">{t("products")}</h1>
+          <h1 className="text-2xl font-bold text-slate-900">{t("title")}</h1>
           <p className="text-slate-500 mt-1">
-            {total > 0 ? `${total} sản phẩm` : "Quản lý tất cả sản phẩm"}
+            {total > 0 ? t("totalProducts", { total }) : t("manageAll")}
           </p>
         </div>
         <Link
           href="/dashboard/products/new"
           className="h-10 px-4 bg-primary hover:bg-primary-hover text-white rounded-xl font-bold transition-all shadow-soft flex items-center gap-2 text-sm"
         >
-          + Thêm sản phẩm
+          {t("addBtn")}
         </Link>
+      </div>
+
+      {/* Type filter tabs */}
+      <div className="flex gap-2">
+        {(["", "SourceCode", "StandaloneService"] as const).map(type => (
+          <button
+            key={type}
+            onClick={() => { setTypeFilter(type); setPage(1); }}
+            className={`h-8 px-4 rounded-lg text-sm font-semibold transition-colors ${typeFilter === type
+              ? type === "StandaloneService" ? "bg-purple-100 text-purple-700" : type === "SourceCode" ? "bg-indigo-100 text-indigo-700" : "bg-slate-200 text-slate-700"
+              : "bg-white border border-slate-200 text-slate-500 hover:bg-slate-50"
+              }`}
+          >
+            {type === "" ? t("filterAll") : type === "SourceCode" ? t("filterSourceCode") : t("filterService")}
+          </button>
+        ))}
       </div>
 
       {isLoading ? (
@@ -78,7 +95,7 @@ export default function AdminProductsPage() {
           <div className="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center mx-auto mb-4 text-slate-400">
             <Box className="w-8 h-8" />
           </div>
-          <h3 className="text-lg font-bold text-slate-900 mb-1">Chưa có sản phẩm nào</h3>
+          <h3 className="text-lg font-bold text-slate-900 mb-1">{t("noProducts")}</h3>
         </div>
       ) : (
         <>
@@ -87,12 +104,12 @@ export default function AdminProductsPage() {
               <table className="w-full text-sm text-left">
                 <thead className="text-xs text-slate-500 uppercase bg-slate-50/80 border-b border-slate-200">
                   <tr>
-                    <th className="px-6 py-4 font-semibold">Sản phẩm</th>
-                    <th className="px-6 py-4 font-semibold">Loại</th>
-                    <th className="px-6 py-4 font-semibold">Giá</th>
-                    <th className="px-6 py-4 font-semibold">Danh mục</th>
-                    <th className="px-6 py-4 font-semibold text-center">Trạng thái</th>
-                    <th className="px-6 py-4 font-semibold text-right">Hành động</th>
+                    <th className="px-6 py-4 font-semibold">{t("thProduct")}</th>
+                    <th className="px-6 py-4 font-semibold">{t("thType")}</th>
+                    <th className="px-6 py-4 font-semibold">{t("thPrice")}</th>
+                    <th className="px-6 py-4 font-semibold">{t("thCategory")}</th>
+                    <th className="px-6 py-4 font-semibold text-center">{t("thStatus")}</th>
+                    <th className="px-6 py-4 font-semibold text-right">{t("thAction")}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
@@ -137,7 +154,7 @@ export default function AdminProductsPage() {
                           href={`/dashboard/products/${p.id}`}
                           className="text-primary hover:underline font-medium text-sm inline-flex items-center gap-1"
                         >
-                          Sửa <ExternalLink className="w-3 h-3" />
+                          {t("edit")} <ExternalLink className="w-3 h-3" />
                         </Link>
                       </td>
                     </tr>
@@ -155,17 +172,17 @@ export default function AdminProductsPage() {
                 onClick={() => setPage((p) => p - 1)}
                 className="px-4 py-2 text-sm rounded-lg border border-slate-200 disabled:opacity-40 hover:bg-slate-50"
               >
-                ← Trước
+                ← {t("prev")}
               </button>
               <span className="px-4 py-2 text-sm text-slate-600">
-                Trang {page} / {Math.ceil(total / PAGE_SIZE)}
+                {t("pageInfo", { page, total: Math.ceil(total / PAGE_SIZE) })}
               </span>
               <button
                 disabled={page >= Math.ceil(total / PAGE_SIZE)}
                 onClick={() => setPage((p) => p + 1)}
                 className="px-4 py-2 text-sm rounded-lg border border-slate-200 disabled:opacity-40 hover:bg-slate-50"
               >
-                Sau →
+                {t("next")} →
               </button>
             </div>
           )}

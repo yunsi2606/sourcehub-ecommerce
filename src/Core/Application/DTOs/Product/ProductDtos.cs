@@ -128,3 +128,16 @@ public record ProductQueryParams(
     int Page = 1,
     int PageSize = 12
 );
+
+public record CreateAddonRequest(
+    string Name,
+    string? Description,
+    decimal Price // 0 = free add-on
+);
+
+public record UpdateAddonRequest(
+    string? Name,
+    string? Description,
+    decimal? Price,
+    bool? IsActive
+);

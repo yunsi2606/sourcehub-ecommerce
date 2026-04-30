@@ -7,6 +7,7 @@ using SourceEcommerce.Domain.Enums;
 
 namespace SourceEcommerce.API.Controllers;
 
+[Route("api/v1/service-projects")]
 [Authorize]
 public class ServiceProjectsController(IApplicationDbContext db) : BaseApiController
 {
